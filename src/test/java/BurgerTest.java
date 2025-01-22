@@ -19,22 +19,28 @@ import static org.junit.Assert.assertEquals;
 public class BurgerTest {
 
     @Mock
-    Bun bun;
+    private Bun bun;
     @Mock
-    Ingredient onion, cheese;
+    private Ingredient onion, cheese;
 
-    Burger burger;
+    private Burger burger;
 
     @Before
     public void initBurger() {
         burger = new Burger();
+        Mockito.when(bun.getPrice()).thenReturn(200f);
+        Mockito.when(onion.getPrice()).thenReturn(57f);
+        Mockito.when(bun.getName()).thenReturn("black bun");
+        Mockito.when(cheese.getType()).thenReturn(IngredientType.FILLING);
+        Mockito.when(cheese.getName()).thenReturn("cheese");
+        Mockito.when(cheese.getPrice()).thenReturn(30f);
     }
 
     @Test
     public void isIngredientAddedTest() {
         int expectedSize = burger.ingredients.size() + 1;
         burger.addIngredient(onion);
-        assertEquals(expectedSize, burger.ingredients.size());
+        assertEquals("Неверное количесво ингредиентов", expectedSize, burger.ingredients.size());
     }
 
     @Test
@@ -42,7 +48,7 @@ public class BurgerTest {
         burger.ingredients.add(onion);
         int expectedSize = burger.ingredients.size() - 1;
         burger.removeIngredient(0);
-        assertEquals(expectedSize, burger.ingredients.size());
+        assertEquals("Неверное количесво ингредиентов", expectedSize, burger.ingredients.size());
     }
 
     @Test
@@ -50,35 +56,27 @@ public class BurgerTest {
         burger.ingredients.addAll(Arrays.asList(onion, cheese));
         List<Ingredient> expectedList = new ArrayList<>(Arrays.asList(cheese, onion));
         burger.moveIngredient(0, 1);
-        assertEquals(expectedList, burger.ingredients);
+        assertEquals("Ингредиенты не поменялись местами", expectedList, burger.ingredients);
     }
 
     @Test
     public void getBurgersPriceTest() {
         burger.setBuns(bun);
         burger.ingredients.add(onion);
-        Mockito.when(bun.getPrice()).thenReturn(200f);
-        Mockito.when(onion.getPrice()).thenReturn(57f);
         float expectedPrice = 457f;
-        assertEquals(expectedPrice, burger.getPrice(), 0);
+        assertEquals("Неверный расчет стоимости", expectedPrice, burger.getPrice(), 0);
     }
 
     @Test
     public void getBurgersReceiptTest() {
         burger.setBuns(bun);
         burger.ingredients.add(cheese);
-        Mockito.when(bun.getName()).thenReturn("black bun");
-        Mockito.when(bun.getPrice()).thenReturn(100f);
-        Mockito.when(cheese.getType()).thenReturn(IngredientType.FILLING);
-        Mockito.when(cheese.getName()).thenReturn("cheese");
-        Mockito.when(cheese.getPrice()).thenReturn(30f);
 
         String expectedReceipt = String.format("(==== %s ====)%n", "black bun") +
                 String.format("= %s %s =%n", "filling", "cheese") +
                 String.format("(==== %s ====)%n", "black bun") +
-                String.format("%nPrice: %f%n", 230f);
+                String.format("%nPrice: %f%n", 430f);
 
-        assertEquals(expectedReceipt, burger.getReceipt());
+        assertEquals("Рецепт не соответствует ожидаемому", expectedReceipt, burger.getReceipt());
     }
-
 }
